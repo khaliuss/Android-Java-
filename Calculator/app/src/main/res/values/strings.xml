@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Calculator</string>
+    <string name="math_text">%1d+%2d = %3s</string>
+    <string name="answer">Answer</string>
+    <string name="incorrect_answer">Sorry,the answer is incorrect!</string>
+    <string name="correct_answer">You are right!</string>
+</resources>
