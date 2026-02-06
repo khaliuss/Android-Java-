@@ -1,9 +1,9 @@
 package com.example.caffe;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -28,33 +28,29 @@ public class OrderActivity extends AppCompatActivity {
     private Spinner spinner;
     private Button makeOrderBt;
 
-    private String wellcome_client;
+    private String greeting;
     private String name;
+    private static final String EXTRA_NAME = "name";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order);
-        name = getIntent().getStringExtra("name");
-        wellcome_client = getString(R.string.client_welcoming_text,name);
+
+        name = getIntent().getStringExtra(EXTRA_NAME);
+        greeting = getString(R.string.greeting,name);
         init();
 
 
-        welcomingText.setText(wellcome_client);
+        welcomingText.setText(greeting);
 
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(@NonNull RadioGroup group, int checkedId) {
                 if (checkedId == tea.getId()){
-                    complementsText.setText(getString(R.string.complements_text,"Tea"));
-                    ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(OrderActivity.this,R.array.tea_types, android.R.layout.simple_spinner_item);
-                    spinner.setAdapter(adapter);
-                    lemonChB.setVisibility(View.VISIBLE);
+                    teaChoose();
                 }else {
-                    complementsText.setText(getString(R.string.complements_text,"Coffee"));
-                    ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(OrderActivity.this,R.array.coffee_types, android.R.layout.simple_spinner_item);
-                    spinner.setAdapter(adapter);
-                    lemonChB.setVisibility(View.INVISIBLE);
+                    coffeeChoose();
                 }
             }
         });
@@ -66,9 +62,26 @@ public class OrderActivity extends AppCompatActivity {
             }
         });
 
+    }
 
+    public static Intent newIntent(Context context,String name){
+        Intent intent = new Intent(context,OrderActivity.class);
+        intent.putExtra(EXTRA_NAME,name);
+        return intent;
+    }
 
+    private void teaChoose(){
+        complementsText.setText(getString(R.string.complements_text,"Tea"));
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(OrderActivity.this,R.array.tea_types, android.R.layout.simple_spinner_item);
+        spinner.setAdapter(adapter);
+        lemonChB.setVisibility(View.VISIBLE);
+    }
 
+    private void coffeeChoose(){
+        complementsText.setText(getString(R.string.complements_text,"Coffee"));
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(OrderActivity.this,R.array.coffee_types, android.R.layout.simple_spinner_item);
+        spinner.setAdapter(adapter);
+        lemonChB.setVisibility(View.INVISIBLE);
     }
 
     private void makeOrder(){
@@ -115,7 +128,7 @@ public class OrderActivity extends AppCompatActivity {
         sugarChB = findViewById(R.id.sugarChB);
         milkChB = findViewById(R.id.milkChB);
         lemonChB = findViewById(R.id.lemonChB);
-        spinner = findViewById(R.id.spinner);
+        spinner = findViewById(R.id.teaSpinner);
         makeOrderBt = findViewById(R.id.makeOrderBt);
 
         complementsText.setText(getString(R.string.complements_text,"Tea"));

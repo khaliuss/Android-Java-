@@ -38,9 +38,7 @@ public class MainActivity extends AppCompatActivity {
             String password = passwordEd.getText().toString();
 
             if (!name.isBlank() && !password.isBlank()){
-                Intent intent = new Intent(this,OrderActivity.class);
-                intent.putExtra("name",nameEd.getText().toString());
-                intent.putExtra("password",passwordEd.getText().toString());
+                Intent intent = OrderActivity.newIntent(this,name);
                 startActivity(intent);
             }else {
                 Toast.makeText(this,"Your name or password is incorrect",Toast.LENGTH_SHORT).show();

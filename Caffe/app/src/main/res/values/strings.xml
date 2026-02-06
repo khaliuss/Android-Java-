@@ -4,7 +4,7 @@
     <string name="name_hint">User name</string>
     <string name="password_hint">Password</string>
     <string name="bt_sign_in">SIGN IN</string>
-    <string name="client_welcoming_text">Hello %s! What\'s you order?</string>
+    <string name="greeting">Hello %s! What\'s you order?</string>
     <string name="tea">Tea</string>
     <string name="coffee">Coffee</string>
     <string name="complements_text">What\'s complement to your %s?</string>
