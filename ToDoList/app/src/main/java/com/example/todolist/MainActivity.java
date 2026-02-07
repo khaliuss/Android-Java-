@@ -7,6 +7,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -88,6 +89,6 @@ public class MainActivity extends AppCompatActivity {
         fabAddNote = findViewById(R.id.addTaskFButton);
         recyclerViewNotes = findViewById(R.id.recyclerViewNotes);
         notesAdapter = new NotesAdapter();
-        mainViewModel = new MainViewModel(getApplication());
+        mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
     }
 }

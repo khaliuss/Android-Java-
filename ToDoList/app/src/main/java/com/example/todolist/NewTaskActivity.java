@@ -16,6 +16,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 public class NewTaskActivity extends AppCompatActivity {
 
@@ -25,15 +27,24 @@ public class NewTaskActivity extends AppCompatActivity {
     private RadioGroup radioGroup;
     private RadioButton medium;
     private RadioButton high;
-    private NoteDataBase noteDataBase;
 
-    Handler handler = new Handler(Looper.getMainLooper());
+    private NewTaskViewModel newTaskViewModel;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_task);
         init();
+
+        newTaskViewModel.getIsFinish().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean isFinished) {
+                if (isFinished){
+                    finish();
+                }
+            }
+        });
 
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,20 +67,8 @@ public class NewTaskActivity extends AppCompatActivity {
         }
 
         Note note = new Note(text, priority);
+        newTaskViewModel.add(note);
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                noteDataBase.notesDao().add(note);
-
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        finish();
-                    }
-                });
-            }
-        }).start();
     }
 
     public void init() {
@@ -78,7 +77,7 @@ public class NewTaskActivity extends AppCompatActivity {
         medium = findViewById(R.id.mediumRButton);
         high = findViewById(R.id.highRButton);
         editText = findViewById(R.id.taskNote);
-        noteDataBase = NoteDataBase.getInstance(getApplication());
+        newTaskViewModel = new ViewModelProvider(this).get(NewTaskViewModel.class);
     }
 
     public static Intent newIntent(Context context) {
