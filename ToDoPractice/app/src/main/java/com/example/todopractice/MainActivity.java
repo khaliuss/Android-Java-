@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
                 int position = viewHolder.getAdapterPosition();
                 Note note = noteAdapter.getNotes().get(position);
                 mainViewModel.remove(note);
+
             }
         });
         itemTouchHelper.attachToRecyclerView(noteRecyclerView);
@@ -66,6 +67,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mainViewModel.onRefresh();
     }
 
     private void init(){

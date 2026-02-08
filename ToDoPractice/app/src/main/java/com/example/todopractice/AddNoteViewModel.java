@@ -35,7 +35,6 @@ public class AddNoteViewModel extends AndroidViewModel {
 
     public void add(Note note){
         disposable = noteDataBase.notesDao().add(note)
-                .delay(5, TimeUnit.SECONDS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action() {
