@@ -12,6 +12,7 @@ import androidx.lifecycle.MutableLiveData;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.Action;
@@ -34,7 +35,7 @@ public class AddNoteViewModel extends AndroidViewModel {
 
 
     public void add(Note note){
-        disposable = noteDataBase.notesDao().add(note)
+        disposable = addRx(note)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action() {
@@ -44,6 +45,15 @@ public class AddNoteViewModel extends AndroidViewModel {
                         isFinished.setValue(true);
                     }
                 });
+    }
+
+    private Completable addRx(Note note){
+        return Completable.fromAction(new Action() {
+            @Override
+            public void run() throws Throwable {
+                noteDataBase.notesDao().add(note);
+            }
+        });
     }
 
     @Override
