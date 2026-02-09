@@ -1,19 +1,23 @@
 package com.example.movies.recuclerView;
 
+import android.app.Application;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.movies.MainActivity;
 import com.example.movies.R;
 import com.example.movies.pojo.Movie;
+import com.example.movies.viewModels.MainViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +28,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieHolder>
     private List<Movie> movies = new ArrayList<>();
 
     private OnReachEndListener onReachEndListener;
+    private OnClickItem onClickItem;
 
     public void setMovies(List<Movie> movies) {
         this.movies = movies;
@@ -32,6 +37,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieHolder>
 
     public void setOnReachEndListener(OnReachEndListener onReachEndListener) {
         this.onReachEndListener = onReachEndListener;
+    }
+
+    public void setOnClickItem(OnClickItem onClickItem) {
+        this.onClickItem = onClickItem;
     }
 
     @NonNull
@@ -48,6 +57,13 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieHolder>
     @Override
     public void onBindViewHolder(@NonNull MovieAdapter.MovieHolder holder, int position) {
         Movie movie = movies.get(position);
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClickItem.onClick(movie);
+            }
+        });
 
         if (position >= movies.size()-10 && onReachEndListener != null){
                 onReachEndListener.onReachEnd();
@@ -70,6 +86,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieHolder>
         holder.tvRating.setText(String.format(Locale.US,"%.1f",movie.getRating().getKp()));
     }
 
+
     @Override
     public int getItemCount() {
         return movies.size();
@@ -77,6 +94,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieHolder>
 
     public interface OnReachEndListener {
         void onReachEnd();
+    }
+
+    public interface OnClickItem {
+        void onClick(Movie movie);
     }
 
     public static class MovieHolder extends RecyclerView.ViewHolder {

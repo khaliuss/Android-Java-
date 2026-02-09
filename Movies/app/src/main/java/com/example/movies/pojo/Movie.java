@@ -4,8 +4,10 @@ import androidx.room.Entity;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 @Entity(tableName = "favorite_movie")
-public class Movie {
+public class Movie implements Serializable {
 
     @SerializedName("id")
     private int id;

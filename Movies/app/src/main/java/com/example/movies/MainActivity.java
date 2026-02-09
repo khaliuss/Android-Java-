@@ -1,5 +1,6 @@
 package com.example.movies;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -56,6 +57,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onReachEnd() {
                 mainViewModel.loadMovies();
+            }
+        });
+
+        movieAdapter.setOnClickItem(new MovieAdapter.OnClickItem() {
+            @Override
+            public void onClick(Movie movie) {
+                Intent intent = DetailActivity.newIntent(MainActivity.this,movie);
+                startActivity(intent);
             }
         });
 
