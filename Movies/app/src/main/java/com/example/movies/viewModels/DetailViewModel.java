@@ -21,6 +21,7 @@ import java.util.List;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.functions.Action;
 import io.reactivex.rxjava3.functions.Consumer;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -29,6 +30,8 @@ public class DetailViewModel extends AndroidViewModel {
 
     private FavoriteMovieDao dao;
     private MutableLiveData<List<Trailer>> trailers =new MutableLiveData<>();
+    private MutableLiveData<Boolean> isTrailerExist = new MutableLiveData<>();
+    private MutableLiveData<Boolean> isTrailersLoading = new MutableLiveData<>();
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
     public DetailViewModel(@NonNull Application application) {
         super(application);
@@ -39,10 +42,31 @@ public class DetailViewModel extends AndroidViewModel {
         return trailers;
     }
 
+    public LiveData<Boolean> getIsTrailerExist() {
+        return isTrailerExist;
+    }
+
+    public LiveData<Boolean> getIsTrailersLoading() {
+        return isTrailersLoading;
+    }
+
     public void loadTrailers(int id){
         Disposable disposable = ApiFactory.getApiService().loadTrailers(id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe(new Consumer<Disposable>() {
+                    @Override
+                    public void accept(Disposable disposable) throws Throwable {
+                        isTrailersLoading.setValue(true);
+                    }
+                })
+                .doAfterTerminate(new Action() {
+                    @Override
+                    public void run() throws Throwable {
+                        isTrailersLoading.setValue(false);
+                    }
+                })
+                .repeat(2)
                 .map(new Function<TrailerResponse, List<Trailer>>() {
                     @Override
                     public List<Trailer> apply(TrailerResponse trailerResponse) throws Throwable {
@@ -53,6 +77,12 @@ public class DetailViewModel extends AndroidViewModel {
                     @Override
                     public void accept(List<Trailer> trailersList) throws Throwable {
                         trailers.setValue(trailersList);
+                        isTrailerExist.setValue(true);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Throwable {
+                        isTrailerExist.setValue(false);
                     }
                 });
         compositeDisposable.add(disposable);

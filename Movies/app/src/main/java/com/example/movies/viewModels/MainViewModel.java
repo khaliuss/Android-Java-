@@ -52,6 +52,7 @@ public class MainViewModel extends AndroidViewModel {
         }
         Disposable disposable = apiService.loadMovies(page).
                 subscribeOn(Schedulers.io())
+
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(new Consumer<Disposable>() {
                     @Override
@@ -65,6 +66,7 @@ public class MainViewModel extends AndroidViewModel {
                         isLoading.setValue(false);
                     }
                 })
+                .repeat(2)
                 .subscribe(new Consumer<MovieList>() {
                     @Override
                     public void accept(MovieList movieList) throws Throwable {
@@ -76,6 +78,14 @@ public class MainViewModel extends AndroidViewModel {
                             moviesMLD.setValue(movieList.getMovies());
                         }
                         page++;
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Throwable {
+                        if (throwable.getMessage().equals("timeout")){
+                            loadMovies();
+                        }
+                        Log.d("MainViewModel","Ошибка: "+throwable.getMessage());
                     }
                 });
         compositeDisposable.add(disposable);
