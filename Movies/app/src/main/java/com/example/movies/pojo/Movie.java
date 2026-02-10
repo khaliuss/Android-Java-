@@ -1,6 +1,9 @@
 package com.example.movies.pojo;
 
+import androidx.room.Embedded;
 import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -10,6 +13,7 @@ import java.io.Serializable;
 public class Movie implements Serializable {
 
     @SerializedName("id")
+    @PrimaryKey(autoGenerate = false)
     private int id;
     @SerializedName("name")
     private String name;
@@ -21,10 +25,15 @@ public class Movie implements Serializable {
     private String year;
 
     @SerializedName("poster")
+    @Embedded
     private  Poster poster;
 
     @SerializedName("rating")
+    @Embedded
     private Rating rating;
+
+    @Ignore
+    private boolean isFavorite;
 
     public Movie(int id, String name, String description, String year, Poster poster, Rating rating) {
         this.id = id;
@@ -33,6 +42,13 @@ public class Movie implements Serializable {
         this.year = year;
         this.poster = poster;
         this.rating = rating;
+        this.isFavorite = false;
+    }
+
+    @Ignore
+    public Movie(int id, String name, String description, String year, Poster poster, Rating rating,boolean isFavorite) {
+       this(id,name,description,year,poster,rating);
+       this.isFavorite = isFavorite;
     }
 
     public int getId() {
@@ -57,6 +73,10 @@ public class Movie implements Serializable {
 
     public Rating getRating() {
         return rating;
+    }
+
+    public boolean isFavorite() {
+        return isFavorite;
     }
 
     @Override

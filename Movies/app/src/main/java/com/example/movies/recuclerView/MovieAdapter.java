@@ -58,13 +58,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieHolder>
     public void onBindViewHolder(@NonNull MovieAdapter.MovieHolder holder, int position) {
         Movie movie = movies.get(position);
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onClickItem.onClick(movie);
-            }
-        });
-
         if (position >= movies.size()-10 && onReachEndListener != null){
                 onReachEndListener.onReachEnd();
         }
@@ -84,6 +77,15 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieHolder>
         Drawable drawable = ContextCompat.getDrawable(holder.itemView.getContext(),background);
         holder.tvRating.setBackground(drawable);
         holder.tvRating.setText(String.format(Locale.US,"%.1f",movie.getRating().getKp()));
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onClickItem != null){
+                    onClickItem.onClick(movie);
+                }
+            }
+        });
     }
 
 
