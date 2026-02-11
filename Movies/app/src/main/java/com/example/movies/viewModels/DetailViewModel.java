@@ -2,6 +2,7 @@ package com.example.movies.viewModels;
 
 import android.app.Application;
 import android.health.connect.TimeRangeFilter;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -11,6 +12,8 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.movies.database.FavoriteDataBase;
 import com.example.movies.database.FavoriteMovieDao;
 import com.example.movies.pojo.Movie;
+import com.example.movies.pojo.Review;
+import com.example.movies.pojo.ReviewResponse;
 import com.example.movies.pojo.Trailer;
 import com.example.movies.pojo.TrailerResponse;
 import com.example.movies.retrofit.ApiFactory;
@@ -29,10 +32,12 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 public class DetailViewModel extends AndroidViewModel {
 
     private FavoriteMovieDao dao;
-    private MutableLiveData<List<Trailer>> trailers =new MutableLiveData<>();
+    private MutableLiveData<List<Trailer>> trailers = new MutableLiveData<>();
+    private MutableLiveData<List<Review>> reviews = new MutableLiveData<>();
     private MutableLiveData<Boolean> isTrailerExist = new MutableLiveData<>();
     private MutableLiveData<Boolean> isTrailersLoading = new MutableLiveData<>();
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
+
     public DetailViewModel(@NonNull Application application) {
         super(application);
         dao = FavoriteDataBase.getDataBase(getApplication()).favoriteMovieDao();
@@ -40,6 +45,10 @@ public class DetailViewModel extends AndroidViewModel {
 
     public LiveData<List<Trailer>> trailers() {
         return trailers;
+    }
+
+    public LiveData<List<Review>> getReviews() {
+        return reviews;
     }
 
     public LiveData<Boolean> getIsTrailerExist() {
@@ -50,7 +59,7 @@ public class DetailViewModel extends AndroidViewModel {
         return isTrailersLoading;
     }
 
-    public void loadTrailers(int id){
+    public void loadTrailers(int id) {
         Disposable disposable = ApiFactory.getApiService().loadTrailers(id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -88,7 +97,34 @@ public class DetailViewModel extends AndroidViewModel {
         compositeDisposable.add(disposable);
     }
 
-    public void addMovieToFavorite(Movie movie){
+    public void loadReview(int id) {
+        Disposable disposable = ApiFactory.getApiService().loadReviews(id)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map(new Function<ReviewResponse, List<Review>>() {
+                    @Override
+                    public List<Review> apply(ReviewResponse reviewResponse) throws Throwable {
+                        return reviewResponse.getReviewList();
+                    }
+                })
+                .subscribe(new Consumer<List<Review>>() {
+                    @Override
+                    public void accept(List<Review> reviewList) throws Throwable {
+                        reviews.setValue(reviewList);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Throwable {
+                        Log.d("DetailViewModel","Occurred in: "+throwable.getMessage());
+
+                    }
+                });
+
+        compositeDisposable.add(disposable);
+    }
+
+
+    public void addMovieToFavorite(Movie movie) {
         Disposable disposable = dao.addToFavorite(movie)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -96,7 +132,7 @@ public class DetailViewModel extends AndroidViewModel {
         compositeDisposable.add(disposable);
     }
 
-    public void removeMovieFavorite(int id){
+    public void removeMovieFavorite(int id) {
         Disposable disposable = dao.removeFromFavorite(id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

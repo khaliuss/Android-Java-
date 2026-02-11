@@ -4,31 +4,25 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.movies.pojo.Movie;
+import com.example.movies.pojo.Review;
 import com.example.movies.pojo.Trailer;
-import com.example.movies.recuclerView.MovieAdapter;
+import com.example.movies.recuclerView.ReviewAdapter;
 import com.example.movies.recuclerView.TrailerAdapter;
 import com.example.movies.viewModels.DetailViewModel;
 
-import java.io.Serializable;
 import java.util.List;
 
 public class DetailActivity extends AppCompatActivity {
@@ -43,6 +37,9 @@ public class DetailActivity extends AppCompatActivity {
     private TextView movieNDesc;
     private RecyclerView trailerRecycler;
     private TrailerAdapter trailerAdapter;
+
+    private RecyclerView reviewRecycler;
+    private ReviewAdapter reviewAdapter;
     private ProgressBar progressBar;
 
     @Override
@@ -79,6 +76,31 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
 
+        trailersFunctionality(movie);
+
+        reviewFunctionality(movie);
+
+
+
+
+    }
+
+    private void init() {
+        posterImg = findViewById(R.id.detailImg);
+        favoriteBt = findViewById(R.id.detailIFavoriteImgButton);
+        movieName = findViewById(R.id.detailIMovieName);
+        movieYear = findViewById(R.id.detailIMovieYear);
+        movieNDesc = findViewById(R.id.detailIMovieDescription);
+        progressBar = findViewById(R.id.trailerProgressBar);
+        detailViewModel = new ViewModelProvider(this).get(DetailViewModel.class);
+        trailerRecycler = findViewById(R.id.trailersRecycler);
+        trailerAdapter = new TrailerAdapter();
+        reviewRecycler = findViewById(R.id.reviewRecycler);
+        reviewAdapter = new ReviewAdapter();
+    }
+
+
+    private void trailersFunctionality(Movie movie){
         trailerRecycler.setAdapter(trailerAdapter);
 
         detailViewModel.loadTrailers(movie.getId());
@@ -120,20 +142,22 @@ public class DetailActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-
     }
 
-    private void init() {
-        posterImg = findViewById(R.id.detailImg);
-        favoriteBt = findViewById(R.id.detailIFavoriteImgButton);
-        movieName = findViewById(R.id.detailIMovieName);
-        movieYear = findViewById(R.id.detailIMovieYear);
-        movieNDesc = findViewById(R.id.detailIMovieDescription);
-        progressBar = findViewById(R.id.trailerProgressBar);
-        detailViewModel = new ViewModelProvider(this).get(DetailViewModel.class);
-        trailerRecycler = findViewById(R.id.trailersRecycler);
-        trailerAdapter = new TrailerAdapter();
+
+    private void reviewFunctionality(Movie movie) {
+
+        reviewRecycler.setAdapter(reviewAdapter);
+
+        detailViewModel.loadReview(movie.getId());
+
+        detailViewModel.getReviews().observe(this, new Observer<List<Review>>() {
+            @Override
+            public void onChanged(List<Review> reviews) {
+                reviewAdapter.setReviews(reviews);
+            }
+        });
+
     }
 
     public static Intent newIntent(Context context, Movie movie) {
