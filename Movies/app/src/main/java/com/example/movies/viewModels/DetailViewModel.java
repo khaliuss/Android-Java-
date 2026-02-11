@@ -1,6 +1,7 @@
 package com.example.movies.viewModels;
 
 import android.app.Application;
+import android.content.Context;
 import android.health.connect.TimeRangeFilter;
 import android.util.Log;
 
@@ -8,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 
 import com.example.movies.database.FavoriteDataBase;
 import com.example.movies.database.FavoriteMovieDao;
@@ -42,6 +44,7 @@ public class DetailViewModel extends AndroidViewModel {
         super(application);
         dao = FavoriteDataBase.getDataBase(getApplication()).favoriteMovieDao();
     }
+
 
     public LiveData<List<Trailer>> trailers() {
         return trailers;
@@ -123,6 +126,10 @@ public class DetailViewModel extends AndroidViewModel {
         compositeDisposable.add(disposable);
     }
 
+    public LiveData<Movie> getFavoriteMovie(Movie movie){
+        return dao.getFavoriteMovie(movie.getId());
+    }
+
 
     public void addMovieToFavorite(Movie movie) {
         Disposable disposable = dao.addToFavorite(movie)
@@ -132,13 +139,15 @@ public class DetailViewModel extends AndroidViewModel {
         compositeDisposable.add(disposable);
     }
 
-    public void removeMovieFavorite(int id) {
-        Disposable disposable = dao.removeFromFavorite(id)
+    public void removeMovieFavorite(Movie movie) {
+        Disposable disposable = dao.removeFromFavorite(movie.getId())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe();
         compositeDisposable.add(disposable);
     }
+
+
 
     @Override
     protected void onCleared() {

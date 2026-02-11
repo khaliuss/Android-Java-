@@ -12,13 +12,13 @@ import retrofit2.http.Query;
 
 public interface ApiService {
 
-    @GET("movie?token=5RBED7A-V444WWE-QKBP08F-T8BA14K&limit=40&notNullFields=poster.url&sortField=rating.kp&sortType=-1")
+    @GET("movie?token=7NBRPP1-PST4ZKY-HA7X8DD-PYD9S0K&limit=40&notNullFields=poster.url&sortField=rating.kp&sortType=-1")
     Single<MovieList> loadMovies(@Query("page") int page);
 
-    @GET("movie/{id}?token=5RBED7A-V444WWE-QKBP08F-T8BA14K")
+    @GET("movie/{id}?token=7NBRPP1-PST4ZKY-HA7X8DD-PYD9S0K")
     Single<TrailerResponse> loadTrailers(@Path("id") int movieId);
 
-    @GET("review?token=5RBED7A-V444WWE-QKBP08F-T8BA14K")
+    @GET("review?token=7NBRPP1-PST4ZKY-HA7X8DD-PYD9S0K")
     Single<ReviewResponse> loadReviews(@Query("movieId") int movieId);
 
 //    Single<ReviewResponse> loadReviews(@Query("movieId") int movieId);

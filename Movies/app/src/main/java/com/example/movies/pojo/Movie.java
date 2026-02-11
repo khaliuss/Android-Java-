@@ -13,7 +13,7 @@ import java.io.Serializable;
 public class Movie implements Serializable {
 
     @SerializedName("id")
-    @PrimaryKey(autoGenerate = false)
+    @PrimaryKey()
     private int id;
     @SerializedName("name")
     private String name;
@@ -32,8 +32,6 @@ public class Movie implements Serializable {
     @Embedded
     private Rating rating;
 
-    @Ignore
-    private boolean isFavorite;
 
     public Movie(int id, String name, String description, String year, Poster poster, Rating rating) {
         this.id = id;
@@ -42,13 +40,6 @@ public class Movie implements Serializable {
         this.year = year;
         this.poster = poster;
         this.rating = rating;
-        this.isFavorite = false;
-    }
-
-    @Ignore
-    public Movie(int id, String name, String description, String year, Poster poster, Rating rating,boolean isFavorite) {
-       this(id,name,description,year,poster,rating);
-       this.isFavorite = isFavorite;
     }
 
     public int getId() {
@@ -75,9 +66,6 @@ public class Movie implements Serializable {
         return rating;
     }
 
-    public boolean isFavorite() {
-        return isFavorite;
-    }
 
     @Override
     public String toString() {

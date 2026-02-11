@@ -2,6 +2,7 @@ package com.example.movies;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -11,11 +12,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.movies.database.FavoriteDataBase;
 import com.example.movies.pojo.Movie;
 import com.example.movies.pojo.Review;
 import com.example.movies.pojo.Trailer;
@@ -29,7 +32,6 @@ public class DetailActivity extends AppCompatActivity {
 
     private static final String MOVIE = "movie";
     private DetailViewModel detailViewModel;
-
     private ImageView posterImg;
     private ImageView favoriteBt;
     private TextView movieName;
@@ -41,6 +43,7 @@ public class DetailActivity extends AppCompatActivity {
     private RecyclerView reviewRecycler;
     private ReviewAdapter reviewAdapter;
     private ProgressBar progressBar;
+    private boolean isFavorite;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +51,7 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail);
         init();
         Movie movie = (Movie) getIntent().getSerializableExtra(MOVIE);
+
 
         Glide.with(this)
                 .load(movie.getPoster().getUrl())
@@ -57,21 +61,33 @@ public class DetailActivity extends AppCompatActivity {
         movieYear.setText(movie.getYear());
         movieNDesc.setText(movie.getDescription());
 
-        if (movie.isFavorite()) {
-            favoriteBt.setImageDrawable(getDrawable(android.R.drawable.btn_star_big_on));
-        } else {
-            favoriteBt.setImageDrawable(getDrawable(android.R.drawable.btn_star_big_off));
-        }
+        Drawable starOn = ContextCompat.getDrawable(this,android.R.drawable.btn_star_big_on);
+        Drawable starOff = ContextCompat.getDrawable(this,android.R.drawable.btn_star_big_off);
+
+        detailViewModel.getFavoriteMovie(movie).observe(this, new Observer<Movie>() {
+            @Override
+            public void onChanged(Movie fMovie) {
+                if (fMovie != null) {
+                    favoriteBt.setImageDrawable(starOn);
+                    isFavorite = true;
+                } else {
+                    favoriteBt.setImageDrawable(starOff);
+                    isFavorite = false;
+                }
+            }
+        });
+
+
 
         favoriteBt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!movie.isFavorite()) {
+                if (isFavorite) {
+                    detailViewModel.removeMovieFavorite(movie);
+                    favoriteBt.setImageDrawable(getDrawable(android.R.drawable.btn_star_big_off));
+                } else {
                     favoriteBt.setImageDrawable(getDrawable(android.R.drawable.btn_star_big_on));
                     detailViewModel.addMovieToFavorite(movie);
-                } else {
-                    detailViewModel.removeMovieFavorite(movie.getId());
-                    favoriteBt.setImageDrawable(getDrawable(android.R.drawable.btn_star_big_off));
                 }
             }
         });
