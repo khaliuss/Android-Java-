@@ -54,7 +54,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String email = emailEditText.getText().toString().trim();
-                Intent intent = ForgetActivity.newIntent(LoginActivity.this,email);
+                Intent intent = ResetPasswordActivity.newIntent(LoginActivity.this,email);
                 startActivity(intent);
             }
         });
@@ -90,7 +90,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onChanged(FirebaseUser firebaseUser) {
                 if (firebaseUser != null){
-                    Intent intent = UsersActivity.newIntent(LoginActivity.this,firebaseUser);
+                    Intent intent = UsersActivity.newIntent(LoginActivity.this,firebaseUser.getUid());
                     startActivity(intent);
                     finish();
                 }else {

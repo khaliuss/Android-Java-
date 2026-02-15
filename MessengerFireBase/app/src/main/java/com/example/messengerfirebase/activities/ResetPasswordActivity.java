@@ -13,15 +13,15 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.messengerfirebase.R;
-import com.example.messengerfirebase.view_models.ForgotViewModel;
+import com.example.messengerfirebase.view_models.ResetPasswordViewModel;
 
-public class ForgetActivity extends AppCompatActivity {
+public class ResetPasswordActivity extends AppCompatActivity {
 
     private static final String EMAIL_EXTRA = "email";
     private EditText emailEdTx;
     private Button resetPassBt;
 
-    private ForgotViewModel viewModel;
+    private ResetPasswordViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,9 +29,14 @@ public class ForgetActivity extends AppCompatActivity {
         setContentView(R.layout.activity_forget);
         initView();
 
+        viewModel = new ViewModelProvider(this).get(ResetPasswordViewModel.class);
+
+        observeViewModel();
+
+
         String email = getIntent().getStringExtra(EMAIL_EXTRA);
 
-        if (!email.isBlank()){
+        if (!email.isBlank()) {
             emailEdTx.setText(email);
         }
 
@@ -45,30 +50,39 @@ public class ForgetActivity extends AppCompatActivity {
             }
         });
 
-        viewModel.getIsResetPassword().observe(this, new Observer<String>() {
+
+
+    }
+
+    private void observeViewModel(){
+        viewModel.getIsSuccess().observe(this, new Observer<Boolean>() {
             @Override
-            public void onChanged(String res) {
-                Toast.makeText(ForgetActivity.this, res, Toast.LENGTH_LONG).show();
+            public void onChanged(Boolean success) {
+                if (success){
+                    Toast.makeText(ResetPasswordActivity.this, "We sent you link", Toast.LENGTH_LONG).show();
+                    finish();
+                }
             }
         });
 
         viewModel.getError().observe(this, new Observer<String>() {
             @Override
             public void onChanged(String errorString) {
-                Toast.makeText(ForgetActivity.this,errorString,Toast.LENGTH_LONG).show();
+                if (errorString != null){
+                    Toast.makeText(ResetPasswordActivity.this, errorString, Toast.LENGTH_LONG).show();
+                }
             }
         });
-
     }
+
 
     private void initView() {
         emailEdTx = findViewById(R.id.forgotEmailEdTx);
         resetPassBt = findViewById(R.id.resetPasswordBt);
-        viewModel = new ViewModelProvider(this).get(ForgotViewModel.class);
     }
 
     public static Intent newIntent(Context context, String email) {
-        Intent intent = new Intent(context, ForgetActivity.class);
+        Intent intent = new Intent(context, ResetPasswordActivity.class);
         intent.putExtra(EMAIL_EXTRA, email);
         return intent;
     }

@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    tools:context=".activities.ForgetActivity">
+    tools:context=".activities.ResetPasswordActivity">
 
     <TextView
         android:layout_width="match_parent"

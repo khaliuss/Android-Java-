@@ -12,4 +12,5 @@
     <string name="email">Email</string>
     <string name="registration">Registration</string>
     <string name="sign_up">Sign Up</string>
+    <string name="your_message">Your message</string>
 </resources>

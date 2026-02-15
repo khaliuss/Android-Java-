@@ -41,29 +41,32 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
 
-    private void onObservers(){
+    private void onObservers() {
 
-        viewModel.getIsSignedUp().observe(this, new Observer<FirebaseUser>() {
+        viewModel.getUser().observe(this, new Observer<FirebaseUser>() {
             @Override
             public void onChanged(FirebaseUser firebaseUser) {
-                Intent intent = UsersActivity.newIntent(RegisterActivity.this,firebaseUser);
-                startActivity(intent);
+                if (firebaseUser != null) {
+                    Intent intent = UsersActivity.newIntent(RegisterActivity.this, firebaseUser.getUid());
+                    startActivity(intent);
+                    finish();
+                }
             }
         });
 
         viewModel.getError().observe(this, new Observer<String>() {
             @Override
             public void onChanged(String errorString) {
-                Toast.makeText(RegisterActivity.this,errorString,Toast.LENGTH_LONG).show();
+                Toast.makeText(RegisterActivity.this, errorString, Toast.LENGTH_LONG).show();
             }
         });
     }
 
-    private String getTrimmedText(EditText editText){
-        return  editText.getText().toString().trim();
+    private String getTrimmedText(EditText editText) {
+        return editText.getText().toString().trim();
     }
 
-    private void onSetClickListeners(){
+    private void onSetClickListeners() {
 
         registerBt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,8 +77,8 @@ public class RegisterActivity extends AppCompatActivity {
                 String lastName = getTrimmedText(lastNameEdTx);
                 int age = Integer.parseInt(getTrimmedText(ageEdTx));
 
-                if (!email.isBlank() && !password.isBlank()){
-                    viewModel.signUp(email,password,name,lastName,age);
+                if (!email.isBlank() && !password.isBlank()) {
+                    viewModel.signUp(email, password, name, lastName, age,false);
                 }
             }
         });
@@ -95,7 +98,7 @@ public class RegisterActivity extends AppCompatActivity {
 
 
     public static Intent newIntent(Context context) {
-        Intent intent = new Intent(context,RegisterActivity.class);
+        Intent intent = new Intent(context, RegisterActivity.class);
         return intent;
     }
 }
